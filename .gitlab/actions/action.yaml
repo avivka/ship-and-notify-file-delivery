@@ -1,0 +1,102 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag ship-and-notify-file-delivery:$(date +%s)
+
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: docker run -p 9000:8080 ship-and-notify-file-delivery:$(date +%s) 
+    
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{}'
+
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 288229864985.dkr.ecr.eu-west-1.amazonaws.com
+
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: aws ecr create-repository --repository-name ship-and-notify-file-delivery --image-scanning-configuration scanOnPush=true --image-tag-mutability MUTABLE
+
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: docker tag  ship-and-notify-file-delivery:$(date +%s) 288229864985.dkr.ecr.eu-west-1.amazonaws.com/ship-and-notify-file-delivery:$(date +%s)
+
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: docker push 288229864985.dkr.ecr.eu-west-1.amazonaws.com/ship-and-notify-file-delivery:$(date +%s) 
+
+# todo: pass the image as an artifact to the
+
+name: 'Terraform CD'
+on:
+  - pull_request
+jobs:
+
+  terraform:
+
+    name: 'Terraform'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@master
+      - name: 'Terraform Init'
+        uses: hashicorp/terraform-github-actions@master
+        with:
+          tf_actions_version: 0.14
+          tf_actions_subcommand: 'init'
+          tf_actions_working_dir: '.'
+          tf_actions_comment: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 'Terraform Validate'
+        uses: hashicorp/terraform-github-actions@master
+        with:
+          tf_actions_version: 0.14
+          tf_actions_subcommand: 'validate'
+          tf_actions_working_dir: '.'
+          tf_actions_comment: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 'Terraform Plan'
+        uses: hashicorp/terraform-github-actions@master
+        with:
+          tf_actions_version: 0.12.13
+          tf_actions_subcommand: 'plan '
+          tf_actions_working_dir: '.'
+      - name: 'Terraform Apply'
+        uses: hashicorp/terraform-github-actions@master
+        with:
+          tf_actions_version: 0.12.13
+          tf_actions_subcommand: 'apply'
+          tf_actions_working_dir: '.'
+
+branding:
+  icon: bell
+  color: green 
+    
+
+   
+
+
+
+
+
+      
