@@ -32,7 +32,7 @@ resource "aws_lambda_permission" "allow_bucket" {
 }
 
 resource "aws_lambda_function" "scan" {
-  image_uri     = "288229864985.dkr.ecr.eu-west-1.amazonaws.com/ship-and-notify-file-delivery:$(date +%s)"
+  image_uri     = "288229864985.dkr.ecr.eu-west-1.amazonaws.com/ship-and-notify-file-delivery:latest"
   function_name = "scan_file"
   role          = aws_iam_role.iam_for_lambda.arn
   handler       = "lambda.lambda_handler"
