@@ -47,7 +47,7 @@ jobs:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ship-and-notify-file-delivery
       run: |
-        docker build . --tag $ECR_REGISTRY/$ECR_REPOSITORY:$(date +%s)
+        docker build . --file ../../Dockerfile --tag $ECR_REGISTRY/$ECR_REPOSITORY:$(date +%s)
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$(date +%s)
 
     # todo: pass the image as an artifact to the
