@@ -47,8 +47,8 @@ jobs:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ship-and-notify-file-delivery
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$SHA .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$SHA
+        docker build . --file Dockerfile --tag $ECR_REGISTRY/$ECR_REPOSITORY:$(date +%s)
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$(date +%s)
 
     # todo: pass the image as an artifact to the
     # todo: Terraform should be dependent on build stage
@@ -58,7 +58,7 @@ jobs:
     name: 'Terraform'
 
     runs-on: ubuntu-latest
-
+    needs: build
     steps:
       - name: 'Checkout'
         uses: actions/checkout@master
