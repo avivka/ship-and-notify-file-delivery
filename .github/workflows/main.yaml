@@ -34,6 +34,7 @@ jobs:
     #   run: docker push 288229864985.dkr.ecr.eu-west-1.amazonaws.com/ship-and-notify-file-delivery:$(date +%s) 
 
     - name: Configure AWS credentials
+      uses: actions/checkout@v2
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_USER_ACCESS_KEY_ID }}
